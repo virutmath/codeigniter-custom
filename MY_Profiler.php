@@ -46,7 +46,6 @@ class MY_Profiler extends CI_Profiler
     protected function _compile_queries()
     {
         $dbs = array();
-
         // Let's determine which databases are currently connected to
         foreach (get_object_vars($this->CI) as $name => $cobject)
         {
@@ -68,7 +67,6 @@ class MY_Profiler extends CI_Profiler
                 }
             }
         }
-
         if (count($dbs) === 0)
         {
             return "\n\n"
@@ -80,35 +78,27 @@ class MY_Profiler extends CI_Profiler
             .$this->CI->lang->line('profiler_no_db')
             ."</td></tr>\n</table>\n</fieldset>";
         }
-
         // Load the text helper so we can highlight the SQL
         $this->CI->load->helper('text');
-
         // Key words we want bolded
         $highlight = array('SELECT', 'DISTINCT', 'FROM', 'WHERE', 'AND', 'LEFT&nbsp;JOIN', 'ORDER&nbsp;BY', 'GROUP&nbsp;BY', 'LIMIT', 'INSERT', 'INTO', 'VALUES', 'UPDATE', 'OR&nbsp;', 'HAVING', 'OFFSET', 'NOT&nbsp;IN', 'IN', 'LIKE', 'NOT&nbsp;LIKE', 'COUNT', 'MAX', 'MIN', 'ON', 'AS', 'AVG', 'SUM', '(', ')');
-
         $output  = "\n\n";
         $count = 0;
-
         foreach ($dbs as $name => $db)
         {
             $hide_queries = (count($db->queries) > $this->_query_toggle_count) ? ' display:none' : '';
             $total_time = number_format(array_sum($db->query_times), 4).' '.$this->CI->lang->line('profiler_seconds');
-
             $show_hide_js = '(<span style="cursor: pointer;" onclick="var s=document.getElementById(\'ci_profiler_queries_db_'.$count.'\').style;s.display=s.display==\'none\'?\'\':\'none\';this.innerHTML=this.innerHTML==\''.$this->CI->lang->line('profiler_section_hide').'\'?\''.$this->CI->lang->line('profiler_section_show').'\':\''.$this->CI->lang->line('profiler_section_hide').'\';">'.$this->CI->lang->line('profiler_section_hide').'</span>)';
-
             if ($hide_queries !== '')
             {
                 $show_hide_js = '(<span style="cursor: pointer;" onclick="var s=document.getElementById(\'ci_profiler_queries_db_'.$count.'\').style;s.display=s.display==\'none\'?\'\':\'none\';this.innerHTML=this.innerHTML==\''.$this->CI->lang->line('profiler_section_show').'\'?\''.$this->CI->lang->line('profiler_section_hide').'\':\''.$this->CI->lang->line('profiler_section_show').'\';">'.$this->CI->lang->line('profiler_section_show').'</span>)';
             }
-
             $output .= '<fieldset id="ci_profiler_queries" style="border:1px solid #0000FF;padding:6px 10px 10px 10px;margin:20px 0 20px 0;background-color:#eee;">'
                 ."\n"
                 .'<legend style="color:#0000FF;">&nbsp;&nbsp;'.$this->CI->lang->line('profiler_database')
                 .':&nbsp; '.$db->database.' ('.$name.')&nbsp;&nbsp;&nbsp;'.$this->CI->lang->line('profiler_queries')
                 .': '.count($db->queries).' ('.$total_time.')&nbsp;&nbsp;'.$show_hide_js."</legend>\n\n\n"
                 .'<table style="width:100%;'.$hide_queries.'" id="ci_profiler_queries_db_'.$count."\">\n";
-
             if (count($db->queries) === 0)
             {
                 $output .= '<tr><td style="width:100%;color:#0000FF;font-weight:normal;background-color:#eee;padding:5px;">'
@@ -120,22 +110,18 @@ class MY_Profiler extends CI_Profiler
                 {
                     $time = number_format($db->query_times[$key], 4);
                     $val = highlight_code($val);
-
                     foreach ($highlight as $bold)
                     {
                         $val = str_replace($bold, '<strong>'.$bold.'</strong>', $val);
                     }
-
                     $output .= '<tr><td style="padding:5px;vertical-align:top;width:1%;color:#900;font-weight:normal;background-color:#ddd;">'
                         .$time.'&nbsp;&nbsp;</td><td style="padding:5px;color:#000;font-weight:normal;background-color:#ddd;">'
                         .$val."</td></tr>\n";
                 }
             }
-
             $output .= "</table>\n</fieldset>";
             $count++;
         }
-
         return $output;
     }
     protected function _compile_duplicate_queries() {
@@ -222,16 +208,18 @@ class MY_Profiler extends CI_Profiler
                     $output .= $duplicateOutput;
                     $output .= "</table>\n";
                     $output .= "</fieldset>";
-                }else{
-                    $output .= "\n\n";
-                    $output .= '<fieldset id="ci_profiler_duplicate_queries" style="border:1px solid #e01dc7;padding:6px 10px 10px 10px;margin:20px 0 20px 0;background-color:#eee">';
-                    $output .= "\n";
-                    $output .= '<legend style="color:#e01dc7;">&nbsp;&nbsp;DUPLICATE QUERIES: '.$db->database.' ('.$name.')&nbsp;&nbsp;</legend>';
-                    $output .= "\n";
-                    $output .= "No duplicate queries";
-                    $output .= "</fieldset>";
                 }
             }
+        }
+        // If no dupes then don't output
+        if (!count($queries['duplicates'])) {
+            $output .= "\n\n";
+            $output .= '<fieldset id="ci_profiler_duplicate_queries" style="border:1px solid #e01dc7;padding:6px 10px 10px 10px;margin:20px 0 20px 0;background-color:#eee">';
+            $output .= "\n";
+            $output .= '<legend style="color:#e01dc7;">&nbsp;&nbsp;DUPLICATE QUERIES: '.$db->database.' ('.$name.')&nbsp;&nbsp;</legend>';
+            $output .= "\n";
+            $output .= "No duplicate queries";
+            $output .= "</fieldset>";
         }
         return $output;
     }
@@ -241,6 +229,9 @@ class MY_Profiler extends CI_Profiler
         $output .= '
         <style>
             #codeigniter_wrap_profiler {
+                font-size: 12px;
+                font-family: \'Source Sans Pro\',\'Helvetica Neue\',Helvetica,Arial,sans-serif;
+                font-weight: 400;
                 position: fixed;
                 bottom : 0;
                 left: 0;
@@ -258,6 +249,7 @@ class MY_Profiler extends CI_Profiler
                 border-top: 1px solid #ccc;
                 border-bottom: 1px solid #ccc;
                 background: #f0f0f0;
+                color: #333;
                 overflow-y: hidden;
                 overflow-x: auto;
             }
@@ -279,13 +271,13 @@ class MY_Profiler extends CI_Profiler
             }
             #codeigniter_profiler_title {
                 float: left;
+                line-height: 1.5em;
                 padding: 4px;
                 font-size: 12px;
                 background: #f0f0f0;
                 cursor: default;
             }
             #codeigniter_profiler_title a {
-                font-size: 12px;
                 color: #666;
                 padding: 4px;
                 text-decoration: none;
