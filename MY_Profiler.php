@@ -209,17 +209,17 @@ class MY_Profiler extends CI_Profiler
                     $output .= "</table>\n";
                     $output .= "</fieldset>";
                 }
+                // If no dupes then don't output
+                if (!count($queries['duplicates'])) {
+                    $output .= "\n\n";
+                    $output .= '<fieldset id="ci_profiler_duplicate_queries" style="border:1px solid #e01dc7;padding:6px 10px 10px 10px;margin:20px 0 20px 0;background-color:#eee">';
+                    $output .= "\n";
+                    $output .= '<legend style="color:#e01dc7;">&nbsp;&nbsp;DUPLICATE QUERIES: '.$db->database.' ('.$name.')&nbsp;&nbsp;</legend>';
+                    $output .= "\n";
+                    $output .= "No duplicate queries";
+                    $output .= "</fieldset>";
+                }
             }
-        }
-        // If no dupes then don't output
-        if (!count($queries['duplicates'])) {
-            $output .= "\n\n";
-            $output .= '<fieldset id="ci_profiler_duplicate_queries" style="border:1px solid #e01dc7;padding:6px 10px 10px 10px;margin:20px 0 20px 0;background-color:#eee">';
-            $output .= "\n";
-            $output .= '<legend style="color:#e01dc7;">&nbsp;&nbsp;DUPLICATE QUERIES: '.$db->database.' ('.$name.')&nbsp;&nbsp;</legend>';
-            $output .= "\n";
-            $output .= "No duplicate queries";
-            $output .= "</fieldset>";
         }
         return $output;
     }
